@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/image.png" alt="Linear Tracker Bot" width="600">
+</p>
+
 # Linear Tracker Bot
 
 Telegram bot for Linear notifications integration into Telegram group with automatic reports and task tracking.

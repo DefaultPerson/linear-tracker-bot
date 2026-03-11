@@ -21,7 +21,9 @@ class TelegramConfig(BaseModel):
     group_id: Optional[int] = None  # DEPRECATED: kept for backward compat
     chats: List[ChatConfig] = Field(default_factory=list)  # Multi-chat config
     allowed_users: List[int] = Field(default_factory=list)  # DM-enabled user IDs
-    admin_users: List[int] = Field(default_factory=list)  # Admin user IDs (can impersonate)
+    admin_users: List[int] = Field(
+        default_factory=list
+    )  # Admin user IDs (can impersonate)
     user_assignee_map: Dict[int, str] = Field(
         default_factory=dict
     )  # tg_id -> Linear assignee name
@@ -38,7 +40,9 @@ class LinearConfig(BaseModel):
     team_id: Optional[str] = None
     team_keys: Optional[List[str]] = None
     org_id: Optional[str] = None
-    include_unstarted: bool = False  # Include "unstarted" state in addition to "started"
+    include_unstarted: bool = (
+        False  # Include "unstarted" state in addition to "started"
+    )
     assignee_map: Dict[str, str] = Field(
         default_factory=dict
     )  # Linear name -> telegram username (no @)
@@ -235,7 +239,9 @@ def load_config(path: Optional[str] = None) -> AppConfig:
         admin_users=_parse_allowed_users(os.environ.get("ADMIN_USERS")),
         user_assignee_map=_parse_user_assignee_map(os.environ.get("USER_ASSIGNEE_MAP")),
         team_dm_map=_parse_team_dm_map(os.environ.get("TEAM_DM_MAP")),
-        team_owner_mention=_parse_team_owner_mention(os.environ.get("TEAM_OWNER_MENTION")),
+        team_owner_mention=_parse_team_owner_mention(
+            os.environ.get("TEAM_OWNER_MENTION")
+        ),
     )
 
     team_keys = team_keys_list or None
@@ -243,7 +249,8 @@ def load_config(path: Optional[str] = None) -> AppConfig:
     linear = LinearConfig(
         api_key=os.environ.get("LINEAR_API_KEY", ""),
         team_keys=team_keys,
-        include_unstarted=os.environ.get("LINEAR_INCLUDE_UNSTARTED", "").lower() in ("true", "1", "yes"),
+        include_unstarted=os.environ.get("LINEAR_INCLUDE_UNSTARTED", "").lower()
+        in ("true", "1", "yes"),
         assignee_map=_parse_assignee_map(os.environ.get("LINEAR_ASSIGNEE_MAP")),
     )
 

@@ -80,14 +80,18 @@ async def process_linear_updates(bot: Bot, config: AppConfig) -> None:
         # Determine target chats for this team
         target_chats = get_chats_for_team(team_key, config)
         if not target_chats:
-            logger.debug(f"No chats configured for team {team_key}, skipping issue {issue_id}")
+            logger.debug(
+                f"No chats configured for team {team_key}, skipping issue {issue_id}"
+            )
 
         # Determine if issue is truly new (created after last check)
         created_at_str = issue.get("createdAt")
         is_new_issue = False
         if created_at_str:
             try:
-                created_at = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
+                created_at = datetime.fromisoformat(
+                    created_at_str.replace("Z", "+00:00")
+                )
                 # Issue is new if created after last_checked (with 1 min buffer for clock skew)
                 is_new_issue = created_at >= since - timedelta(seconds=60)
             except (ValueError, TypeError):
@@ -100,7 +104,13 @@ async def process_linear_updates(bot: Bot, config: AppConfig) -> None:
             text = f"🆕 Создана: <a href='{url}'>{title}</a>{gh_suffix}{assignee_part}\n#linear"
             await send_to_chats(bot, text, target_chats)
         # Assignee change notification (for issues we've seen before)
-        elif not is_new_issue and not initial_run and issue_id in assignee_by_id and assignee_name != prev_assignee and target_chats:
+        elif (
+            not is_new_issue
+            and not initial_run
+            and issue_id in assignee_by_id
+            and assignee_name != prev_assignee
+            and target_chats
+        ):
             mention = map_assignee_to_mention(assignee_name, config.linear.assignee_map)
             assignee_part = f" → {mention}" if mention else ""
             text = f"🔄 Update: <a href='{url}'>{title}</a>{gh_suffix}{assignee_part}\n#linear"

@@ -168,7 +168,9 @@ async def send_personal_tasks(
 
     async with LinearClient(config.linear.api_key) as client:
         issues = await client.get_in_progress_issues(
-            config.linear.team_id, config.linear.team_keys, config.linear.include_unstarted
+            config.linear.team_id,
+            config.linear.team_keys,
+            config.linear.include_unstarted,
         )
 
     filtered = [
