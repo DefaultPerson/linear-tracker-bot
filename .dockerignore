@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+.venv
+bot.log
+bot.pid
+.data
+.git
+node_modules
