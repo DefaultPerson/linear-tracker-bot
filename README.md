@@ -1,12 +1,16 @@
-<p align="center">
-  <img src="assets/image.png" alt="Linear Tracker Bot" width="600">
-</p>
-
 # Linear Tracker Bot
+
+[![CI](https://github.com/DefaultPerson/linear-tracker-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/DefaultPerson/linear-tracker-bot/actions/workflows/ci.yml)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+<p align="center">
+  <img src="assets/image.png" alt="Linear Tracker Bot" width="400">
+</p>
 
 Telegram bot for Linear notifications integration into Telegram group with automatic reports and task tracking.
 
-**meta:** path=<bots/linear-tracker-bot> · stack=<python/aiogram> · services=<bot> · entry=<linear_bot> · ports=<n/a>
+<!-- meta: path=bots/linear-tracker-bot · stack=python/aiogram · services=bot · entry=linear_bot · ports=n/a -->
 
 ## About the Project
 
