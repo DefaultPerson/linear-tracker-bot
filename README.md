@@ -1,24 +1,33 @@
 # Linear Tracker Bot
 
-[![CI](https://github.com/DefaultPerson/linear-tracker-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/DefaultPerson/linear-tracker-bot/actions/workflows/ci.yml)
-[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
 <p align="center">
   <img src="assets/image.png" alt="Linear Tracker Bot" width="400">
+  <br><br>
+  <a href="https://github.com/DefaultPerson/linear-tracker-bot/actions/workflows/ci.yml"><img src="https://github.com/DefaultPerson/linear-tracker-bot/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.13+-blue.svg" alt="Python 3.13+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
 </p>
 
 Telegram bot for Linear notifications integration into Telegram group with automatic reports and task tracking.
 
 <!-- meta: path=bots/linear-tracker-bot · stack=python/aiogram · services=bot · entry=linear_bot · ports=n/a -->
 
-## About the Project
+## Features
 
-* Key features: 1–3 points.
-  - Linear task completion and assignment notifications
-  - Daily and weekly reports with automatic pinning/unpinning
-  - Linear user to Telegram username mapping
-* Architecture (1–2 lines): <Python bot fetches data from Linear API, scheduler creates digests and sends them to Telegram via Bot API>.
+- Real-time notifications on new issues, assignee changes, and task completion
+- Scheduled daily reports with automatic pin/unpin of previous report
+- Weekly summary reports
+- Multi-chat support — route different Linear teams to different Telegram groups
+- Linear user to Telegram username mapping for @mentions
+- GitHub issue link detection from Linear attachments
+
+## Bot Commands
+
+| Command | Description |
+|---------|-------------|
+| `/start` | Show help and command list |
+| `/ct` | Current daily report (done + in progress) |
+| `/mt` | Personal tasks for the calling user |
 
 ## C4
 
@@ -37,8 +46,7 @@ graph TB
     subgraph Commands
         I["/start - Help"]
         J["/ct - Current Report"]
-        K["/ws - Weekly Stats"]
-        L["/mt - Personal Tasks"]
+        K["/mt - Personal Tasks"]
     end
 
     Commands --> B
@@ -46,43 +54,8 @@ graph TB
 
 ## Quick Start
 
-1. deps: <Linux, Docker (optional), Python 3.13>
-2. env: `copy example.env to .env and fill in keys`
-3. install: `poetry install or pip install -r requirements.txt`
-4. dev: `poetry run python -m linear_bot`
-5. prod: `docker compose up -d`
-
-## Env
-
-```
-TELEGRAM_TOKEN=...           # Bot token from @BotFather
-TELEGRAM_GROUP_ID=...        # Telegram group ID
-LINEAR_API_KEY=...           # Personal API token from Linear
-LINEAR_TEAM_KEYS=...         # Comma-separated team keys
-LINEAR_ASSIGNEE_MAP=...      # LinearUser=@telegramusername mapping
-LOG_LEVEL=info               # info|debug|warn|error
-```
-
-## Commands
-
-```
-dev   : poetry run python -m linear_bot
-build : docker build -t linear-tracker-bot .
-lint  : poetry run black . && poetry run isort .
-test  : poetry run pytest
-```
-
-## FS
-
-```
-bots/linear-tracker-bot/
-├── linear_bot/              # Bot source code
-├── tests/                   # Tests
-├── example.env              # Example configuration
-├── pyproject.toml           # Poetry dependencies/config
-└── README.md                # This file
-```
-
-## Contracts / Integrations / DB
-
-* integrations: `Linear API — data source — Personal API token`; `Telegram Bot API — notification delivery — bot token`
+1. deps: Linux, Docker (optional), Python 3.13
+2. env: `cp example.env .env` and fill in keys
+3. install: `uv sync`
+4. dev: `uv run python -m linear_bot`
+5. prod: `docker build -t linear-tracker-bot . && docker run linear-tracker-bot`
