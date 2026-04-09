@@ -1,7 +1,7 @@
 # Linear Tracker Bot
 
 <p align="center">
-  <img src="assets/image.png" alt="Linear Tracker Bot" width="400">
+  <img src="assets/header.svg" alt="Linear Tracker Bot" width="700">
   <br><br>
   <a href="https://github.com/DefaultPerson/linear-tracker-bot/actions/workflows/ci.yml"><img src="https://github.com/DefaultPerson/linear-tracker-bot/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.13+-blue.svg" alt="Python 3.13+"></a>

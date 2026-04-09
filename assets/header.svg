@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="-apple-system,'Segoe UI',system-ui,sans-serif">
+  <defs>
+    <style>
+      .t{fill:#fff;font-size:15px}
+      .b{font-weight:700}
+      .i{font-style:italic}
+      .m{fill:#6d7883;font-size:12px}
+      .l{fill:#64b5f6}
+      .n{fill:#5eb5f7;font-weight:700;font-size:15px}
+    </style>
+  </defs>
+
+  <!-- Chat background -->
+  <rect width="800" height="560" fill="#0e1621"/>
+
+  <!-- Header bar -->
+  <rect width="800" height="56" fill="#17212b"/>
+  <circle cx="40" cy="28" r="18" fill="#5e6ad2"/>
+  <text x="40" y="33" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">L</text>
+  <text x="68" y="26" class="t b">Linear Tracker</text>
+  <rect x="175" y="15" rx="3" ry="3" width="26" height="15" fill="#3498db"/>
+  <text x="188" y="26" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">bot</text>
+  <text x="68" y="44" class="m">bot</text>
+  <g fill="#6d7883">
+    <circle cx="760" cy="22" r="2"/>
+    <circle cx="760" cy="28" r="2"/>
+    <circle cx="760" cy="34" r="2"/>
+  </g>
+
+  <!-- Avatar next to bubble -->
+  <circle cx="40" cy="488" r="18" fill="#5e6ad2"/>
+  <text x="40" y="493" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">L</text>
+
+  <!-- Message bubble -->
+  <rect x="68" y="76" rx="12" ry="12" width="660" height="430" fill="#182533"/>
+
+  <!-- Bubble content -->
+  <text x="84" y="100" class="n">Linear Tracker</text>
+  <rect x="193" y="89" rx="3" ry="3" width="26" height="15" fill="#3498db"/>
+  <text x="206" y="100" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">bot</text>
+
+  <text x="84" y="128" class="t b">Daily Report</text>
+  <text x="84" y="150" class="t"><tspan class="b">Summary:</tspan> Done 3 / Total 8 (37.5%)</text>
+  <text x="84" y="172" class="t">Previous: <tspan class="l" text-decoration="underline">link</tspan></text>
+
+  <text x="84" y="202" class="t b">Done</text>
+  <text x="84" y="224" class="t">✓ <tspan class="l" text-decoration="underline">Fix login bug</tspan></text>
+  <text x="84" y="246" class="t">✓ <tspan class="l" text-decoration="underline">Implement password reset</tspan></text>
+  <text x="84" y="268" class="t">✓ <tspan class="l" text-decoration="underline">Update documentation</tspan></text>
+
+  <text x="84" y="298" class="t b">In Progress</text>
+  <text x="84" y="320" class="t">— <tspan class="i">alice</tspan></text>
+  <text x="100" y="342" class="t">• <tspan class="l" text-decoration="underline">Add two-factor authentication</tspan></text>
+  <text x="100" y="364" class="t">• <tspan class="l" text-decoration="underline">Refactor auth module</tspan></text>
+  <text x="84" y="386" class="t">— <tspan class="i">bob</tspan></text>
+  <text x="100" y="408" class="t">• <tspan class="l" text-decoration="underline">Design dashboard UI</tspan></text>
+
+  <text x="84" y="442" class="l">#linear</text>
+  <text x="712" y="494" text-anchor="end" class="m">08:00</text>
+
+  <!-- Input bar -->
+  <rect y="512" width="800" height="48" fill="#17212b"/>
+  <path d="M22 528 l10 -10 a5 5 0 0 1 7 7 l-12 12 a3 3 0 0 1 -4 -4 l10 -10" stroke="#6d7883" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <text x="50" y="542" class="m">Message</text>
+  <circle cx="720" cy="536" r="10" stroke="#6d7883" stroke-width="1.6" fill="none"/>
+  <circle cx="716" cy="533" r="1.3" fill="#6d7883"/>
+  <circle cx="724" cy="533" r="1.3" fill="#6d7883"/>
+  <path d="M715 539 q5 4 10 0" stroke="#6d7883" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <rect x="762" y="524" width="8" height="14" rx="4" fill="none" stroke="#6d7883" stroke-width="1.6"/>
+  <path d="M757 534 a9 9 0 0 0 18 0" stroke="#6d7883" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <line x1="766" y1="544" x2="766" y2="550" stroke="#6d7883" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="762" y1="550" x2="770" y2="550" stroke="#6d7883" stroke-width="1.6" stroke-linecap="round"/>
+</svg>
