@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime, time, timedelta
 from typing import Dict, List, Optional
 from zoneinfo import ZoneInfo
@@ -8,6 +9,8 @@ from aiogram import Bot
 
 from .config import AppConfig, JsonStore
 from .linear import LinearClient, map_assignee_to_mention
+
+logger = logging.getLogger(__name__)
 
 
 def _store(config: AppConfig) -> JsonStore:
@@ -76,7 +79,11 @@ async def send_current_report(
     # Previous pin link if exists
     store = _store(config)
     pins = store.get_pins()
-    old = pins.get("daily")
+    pin_key = f"daily:{chat_id}"
+    old = pins.get(pin_key)
+    # Migrate legacy global key once (only matches if old run used single chat)
+    if old is None and "daily" in pins and len(config.telegram.chats) <= 1:
+        old = pins.pop("daily")
     if old:
         try:
             link = _chat_internal_link(chat_id, old)
@@ -109,16 +116,20 @@ async def send_current_report(
         if old:
             try:
                 await bot.unpin_chat_message(chat_id=chat_id, message_id=old)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(
+                    "unpin failed chat=%s msg=%s: %s", chat_id, old, e
+                )
         try:
             await bot.pin_chat_message(
                 chat_id=chat_id, message_id=msg.message_id, disable_notification=True
             )
-            pins["daily"] = msg.message_id
+            pins[pin_key] = msg.message_id
             store.set_pins(pins)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(
+                "pin failed chat=%s msg=%s: %s", chat_id, msg.message_id, e
+            )
 
 
 async def send_weekly_stats(
