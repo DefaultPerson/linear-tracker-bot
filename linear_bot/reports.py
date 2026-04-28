@@ -117,9 +117,7 @@ async def send_current_report(
             try:
                 await bot.unpin_chat_message(chat_id=chat_id, message_id=old)
             except Exception as e:
-                logger.warning(
-                    "unpin failed chat=%s msg=%s: %s", chat_id, old, e
-                )
+                logger.warning("unpin failed chat=%s msg=%s: %s", chat_id, old, e)
         try:
             await bot.pin_chat_message(
                 chat_id=chat_id, message_id=msg.message_id, disable_notification=True
@@ -127,9 +125,7 @@ async def send_current_report(
             pins[pin_key] = msg.message_id
             store.set_pins(pins)
         except Exception as e:
-            logger.warning(
-                "pin failed chat=%s msg=%s: %s", chat_id, msg.message_id, e
-            )
+            logger.warning("pin failed chat=%s msg=%s: %s", chat_id, msg.message_id, e)
 
 
 async def send_weekly_stats(
