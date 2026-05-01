@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Set
 
 from aiogram import Bot
@@ -50,8 +50,10 @@ async def process_linear_updates(bot: Bot, config: AppConfig) -> None:
     initial_run = False
     if last_checked_iso:
         since = datetime.fromisoformat(last_checked_iso)
+        if since.tzinfo is None:
+            since = since.replace(tzinfo=timezone.utc)
     else:
-        since = datetime.utcnow() - timedelta(minutes=10)
+        since = datetime.now(timezone.utc) - timedelta(minutes=10)
         initial_run = True
 
     async with LinearClient(config.linear.api_key) as client:
@@ -94,7 +96,7 @@ async def process_linear_updates(bot: Bot, config: AppConfig) -> None:
                 )
                 # Issue is new if created after last_checked (with 1 min buffer for clock skew)
                 is_new_issue = created_at >= since - timedelta(seconds=60)
-            except (ValueError, TypeError):
+            except ValueError:
                 pass
 
         # New issue notification (only if truly created after last check)
@@ -131,5 +133,5 @@ async def process_linear_updates(bot: Bot, config: AppConfig) -> None:
 
     state["assignee_by_id"] = assignee_by_id
     state["state_type_by_id"] = state_type_by_id
-    state["last_checked_iso"] = datetime.utcnow().isoformat()
+    state["last_checked_iso"] = datetime.now(timezone.utc).isoformat()
     store.set_state(state)
