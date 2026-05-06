@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import datetime, time, timedelta
 from typing import Dict, List, Optional
@@ -11,6 +12,12 @@ from .config import AppConfig, JsonStore
 from .linear import LinearClient, map_assignee_to_mention
 
 logger = logging.getLogger(__name__)
+
+# Serializes the pins.json read-modify-write across sibling chat reports
+# firing on the same cron tick — without it, the second writer overwrites
+# the first one's pin id, so the next day's unpin targets a stale id and
+# the previous pin is left in place.
+_pins_lock = asyncio.Lock()
 
 
 def _store(config: AppConfig) -> JsonStore:
@@ -113,19 +120,36 @@ async def send_current_report(
         reply_to_message_id=reply_to_message_id,
     )
     if pin:
-        if old:
+        async with _pins_lock:
+            pins = store.get_pins()
+            current_old = pins.get(pin_key)
+            if (
+                current_old is None
+                and "daily" in pins
+                and len(config.telegram.chats) <= 1
+            ):
+                current_old = pins.pop("daily")
+            if current_old:
+                try:
+                    await bot.unpin_chat_message(
+                        chat_id=chat_id, message_id=current_old
+                    )
+                except Exception as e:
+                    logger.warning(
+                        "unpin failed chat=%s msg=%s: %s", chat_id, current_old, e
+                    )
             try:
-                await bot.unpin_chat_message(chat_id=chat_id, message_id=old)
+                await bot.pin_chat_message(
+                    chat_id=chat_id,
+                    message_id=msg.message_id,
+                    disable_notification=True,
+                )
+                pins[pin_key] = msg.message_id
+                store.set_pins(pins)
             except Exception as e:
-                logger.warning("unpin failed chat=%s msg=%s: %s", chat_id, old, e)
-        try:
-            await bot.pin_chat_message(
-                chat_id=chat_id, message_id=msg.message_id, disable_notification=True
-            )
-            pins[pin_key] = msg.message_id
-            store.set_pins(pins)
-        except Exception as e:
-            logger.warning("pin failed chat=%s msg=%s: %s", chat_id, msg.message_id, e)
+                logger.warning(
+                    "pin failed chat=%s msg=%s: %s", chat_id, msg.message_id, e
+                )
 
 
 async def send_weekly_stats(
