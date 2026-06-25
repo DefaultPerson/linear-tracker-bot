@@ -17,4 +17,5 @@ def register_personal(dp: Dispatcher, config) -> None:
             user,
             config,
             reply_to_message_id=message.message_id,
+            thread_id=message.message_thread_id,
         )

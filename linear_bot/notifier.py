@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Set
+from typing import Dict, List, Optional, Set
 
 from aiogram import Bot
 
-from .config import AppConfig, JsonStore
+from .config import AppConfig, ChatConfig, JsonStore
 from .linear import LinearClient, extract_github_issue_link, map_assignee_to_mention
 
 logger = logging.getLogger(__name__)
@@ -16,30 +16,36 @@ def _store(config: AppConfig) -> JsonStore:
     return JsonStore(config.storage.data_dir)
 
 
-def get_chats_for_team(team_key: str, config: AppConfig) -> List[int]:
-    """Return chat_ids subscribed to this team."""
-    result: List[int] = []
+def get_chats_for_team(team_key: str, config: AppConfig) -> List[ChatConfig]:
+    """Return chats subscribed to this team (with their topic routing)."""
+    result: List[ChatConfig] = []
     for chat in config.telegram.chats:
         # If chat has no team_keys filter, it receives all teams
         if not chat.team_keys or team_key in chat.team_keys:
-            result.append(chat.chat_id)
+            result.append(chat)
     return result
 
 
 async def send_to_chats(
     bot: Bot,
     text: str,
-    chat_ids: List[int],
+    chats: List[ChatConfig],
 ) -> None:
-    """Send message to multiple group chats."""
-    sent_to: Set[int] = set()
-    for chat_id in chat_ids:
-        if chat_id not in sent_to:
+    """Send message to multiple group chats, honoring each chat's forum topic."""
+    sent_to: Set[tuple[int, Optional[int]]] = set()
+    for chat in chats:
+        key = (chat.chat_id, chat.thread_id)
+        if key not in sent_to:
             try:
-                await bot.send_message(chat_id, text, disable_web_page_preview=True)
-                sent_to.add(chat_id)
+                await bot.send_message(
+                    chat.chat_id,
+                    text,
+                    disable_web_page_preview=True,
+                    message_thread_id=chat.thread_id,
+                )
+                sent_to.add(key)
             except Exception as e:
-                logger.warning(f"Failed to send to chat {chat_id}: {e}")
+                logger.warning(f"Failed to send to chat {chat.chat_id}: {e}")
 
 
 async def process_linear_updates(bot: Bot, config: AppConfig) -> None:

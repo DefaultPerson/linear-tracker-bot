@@ -33,13 +33,18 @@ def _start_of_calendar_week_utc(tz_name: str) -> datetime:
     return week_start_local.astimezone(ZoneInfo("UTC"))
 
 
-def _chat_internal_link(chat_id: int, message_id: int) -> str:
+def _chat_internal_link(
+    chat_id: int, message_id: int, thread_id: Optional[int] = None
+) -> str:
     # Works for supergroups: -100XXXXXXXXXX → https://t.me/c/XXXXXXXXXX/<message_id>
+    # In a forum topic the deep link is .../c/<cid>/<thread_id>/<message_id>.
     s = str(chat_id)
     if s.startswith("-100"):
         cid = s[4:]
     else:
         cid = s.lstrip("-")
+    if thread_id:
+        return f"https://t.me/c/{cid}/{thread_id}/{message_id}"
     return f"https://t.me/c/{cid}/{message_id}"
 
 
@@ -50,6 +55,7 @@ async def send_current_report(
     pin: bool = False,
     reply_to_message_id: Optional[int] = None,
     team_keys_filter: Optional[List[str]] = None,
+    thread_id: Optional[int] = None,
 ) -> None:
     week_start_utc = _start_of_calendar_week_utc(config.schedule.timezone)
     # Use team_keys_filter if provided, otherwise fall back to config.linear.team_keys
@@ -93,7 +99,7 @@ async def send_current_report(
         old = pins.pop("daily")
     if old:
         try:
-            link = _chat_internal_link(chat_id, old)
+            link = _chat_internal_link(chat_id, old, thread_id)
             lines.append(f"Previous: <a href='{link}'>link</a>")
         except Exception:
             pass
@@ -118,6 +124,7 @@ async def send_current_report(
         text,
         disable_web_page_preview=True,
         reply_to_message_id=reply_to_message_id,
+        message_thread_id=thread_id,
     )
     if pin:
         async with _pins_lock:
@@ -157,6 +164,7 @@ async def send_weekly_stats(
     chat_id: int,
     config: AppConfig,
     team_keys_filter: Optional[List[str]] = None,
+    thread_id: Optional[int] = None,
 ) -> None:
     week_start_utc = _start_of_calendar_week_utc(config.schedule.timezone)
     # Use team_keys_filter if provided, otherwise fall back to config.linear.team_keys
@@ -183,7 +191,12 @@ async def send_weekly_stats(
         lines.append(f"• <a href='{i['url']}'>{i['title']}</a>")
     lines.append("\n#linear")
     text = "\n".join(lines)
-    await bot.send_message(chat_id, text, disable_web_page_preview=True)
+    await bot.send_message(
+        chat_id,
+        text,
+        disable_web_page_preview=True,
+        message_thread_id=thread_id,
+    )
 
 
 async def send_personal_tasks(
@@ -192,6 +205,7 @@ async def send_personal_tasks(
     user,
     config: AppConfig,
     reply_to_message_id: Optional[int] = None,
+    thread_id: Optional[int] = None,
 ) -> None:
     target_tg = user.username or ""
     reverse = {v: k for k, v in config.linear.assignee_map.items()}
@@ -208,7 +222,9 @@ async def send_personal_tasks(
         i for i in issues if (i.get("assignee") or {}).get("name") == linear_name
     ]
     if not filtered:
-        await bot.send_message(chat_id, "No personal tasks found.")
+        await bot.send_message(
+            chat_id, "No personal tasks found.", message_thread_id=thread_id
+        )
         return
     lines = [f"<b>Tasks for @{target_tg}</b>"]
     for i in filtered:
@@ -219,4 +235,5 @@ async def send_personal_tasks(
         "\n".join(lines),
         disable_web_page_preview=True,
         reply_to_message_id=reply_to_message_id,
+        message_thread_id=thread_id,
     )

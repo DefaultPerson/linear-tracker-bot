@@ -14,6 +14,7 @@ class ChatConfig(BaseModel):
     name: str  # Friendly name (e.g., "chat1")
     chat_id: int  # Telegram chat ID
     team_keys: List[str] = Field(default_factory=list)  # Teams that notify this chat
+    thread_id: Optional[int] = None  # Telegram forum topic ID (optional)
 
 
 class TelegramConfig(BaseModel):
@@ -112,7 +113,11 @@ def _parse_assignee_map(raw: Optional[str]) -> Dict[str, str]:
 
 
 def _parse_chats(raw: Optional[str]) -> List[ChatConfig]:
-    """Parse CHATS=name1:id1:TEAM1,TEAM2;name2:id2:TEAM3."""
+    """Parse CHATS=name1:id1:TEAM1,TEAM2:thread1;name2:id2:TEAM3.
+
+    The 4th field (thread_id) is optional — it routes notifications into a
+    Telegram forum topic. Leave it empty/absent to post to the General topic.
+    """
     if not raw:
         return []
     result: List[ChatConfig] = []
@@ -131,7 +136,17 @@ def _parse_chats(raw: Optional[str]) -> List[ChatConfig]:
         team_keys = []
         if len(parts) >= 3:
             team_keys = [t.strip() for t in parts[2].split(",") if t.strip()]
-        result.append(ChatConfig(name=name, chat_id=chat_id, team_keys=team_keys))
+        thread_id: Optional[int] = None
+        if len(parts) >= 4 and parts[3].strip():
+            try:
+                thread_id = int(parts[3].strip())
+            except ValueError:
+                thread_id = None
+        result.append(
+            ChatConfig(
+                name=name, chat_id=chat_id, team_keys=team_keys, thread_id=thread_id
+            )
+        )
     return result
 
 

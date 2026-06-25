@@ -24,4 +24,5 @@ def register_reports(dp: Dispatcher, config) -> None:
             team_keys_filter=chat_cfg.team_keys
             if chat_cfg and chat_cfg.team_keys
             else None,
+            thread_id=message.message_thread_id,
         )

@@ -23,7 +23,15 @@ async def setup_scheduler(bot: Bot, dp: Dispatcher, config: AppConfig) -> None:
         scheduler.add_job(
             send_current_report,
             trigger=CronTrigger(hour=hour, minute=minute),
-            args=[bot, chat.chat_id, config, True, None, chat.team_keys or None],
+            args=[
+                bot,
+                chat.chat_id,
+                config,
+                True,
+                None,
+                chat.team_keys or None,
+                chat.thread_id,
+            ],
             id=f"daily_report_{chat.name}",
             replace_existing=True,
         )
@@ -32,7 +40,7 @@ async def setup_scheduler(bot: Bot, dp: Dispatcher, config: AppConfig) -> None:
         scheduler.add_job(
             send_weekly_stats,
             trigger=CronTrigger(day_of_week="sun", hour=20, minute=0),
-            args=[bot, chat.chat_id, config, chat.team_keys or None],
+            args=[bot, chat.chat_id, config, chat.team_keys or None, chat.thread_id],
             id=f"weekly_stats_{chat.name}",
             replace_existing=True,
         )
